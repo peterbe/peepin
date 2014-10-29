@@ -2,8 +2,8 @@
 Peepin
 ======
 
-This tool makes it easier to update your strict peep-ready
-requirements.txt file.
+This tool makes it easier to update your strict "peep-ready"
+``requirements.txt`` file.
 
 If you want to add a package or edit the version of one you're currently
 using you have to do the following steps:
