@@ -51,8 +51,9 @@ requirements files.
 Ode to Erik Rose
 ================
 
-Just in case you didn't know. "peep":https://github.com/erikrose/peep/
-is ground breaking. It makes it possible to confidently leave
+Just in case you didn't know;
+`peep <https://github.com/erikrose/peep>`_ is awesome.
+It makes it possible to confidently leave
 third-party packages to be installed on the server without needing to
 be checked into some sort of "vendor" directory.
 
