@@ -7,6 +7,7 @@ import re
 import urllib
 import tempfile
 import os
+import sys
 
 import peep
 
@@ -45,11 +46,8 @@ def run(spec, file):
         prev = []
         for line in requirements.splitlines():
             if '%s==' % package in line:
-                #print "LINES"
                 prev.append(line)
-                # print prev
                 combined = '\n'.join(prev + [''])
-                #print repr(combined)
                 requirements = requirements.replace(combined, new_lines())
                 break
             elif '==' in line:
@@ -61,11 +59,13 @@ def run(spec, file):
 
     return 0
 
+
 def get_latest_version(package):
     url = 'https://pypi.python.org/pypi/%s' % package
     content = _download(url)
     content = content.split('id="breadcrumb"')[1].split('</div>')[0]
     return re.findall('"/pypi/%s/(.*)"' % package, content)[0]
+
 
 def get_hashes(package, version):
 
@@ -79,7 +79,10 @@ def get_hashes(package, version):
     for found in finds:
         url = found[0]
         download_dir = tempfile.gettempdir()
-        filename = os.path.join(download_dir, os.path.basename(url.split('#')[0]))
+        filename = os.path.join(
+            download_dir,
+            os.path.basename(url.split('#')[0])
+        )
         if not os.path.isfile(filename):
             with open(filename, 'wb') as f:
                 f.write(urllib.urlopen(url).read())
@@ -87,9 +90,11 @@ def get_hashes(package, version):
 
 
 def main():
-    import sys
     def grr():
-        print 'USAGE: %s "some-package==1.2.3" [/path/to/requirements.txt]' % __file__
+        print (
+            'USAGE: %s "some-package==1.2.3" [/path/to/requirements.txt]'
+            % __file__
+        )
         sys.exit(1)
 
     args = sys.argv[1:]
