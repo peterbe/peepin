@@ -18,6 +18,23 @@ using you have to do the following steps:
 This script does all those things.
 Hackishly wonderfully so.
 
+A Word of Warning!
+==================
+
+The whole point of peep is that you vet the packages that you use 
+on your laptop and that they haven't been tampered with. Then you 
+can confidently install them on a server. 
+
+This tool downloads from PyPI (over HTTPS) and runs ``peep hash`` 
+on the downloaded files. 
+
+You still need to check that the packages that are downloaded 
+are sane. 
+
+You might not have time to go through the lines one by one 
+but you should be aware that the vetting process is your 
+responsibility. 
+
 Installation
 ============
 
