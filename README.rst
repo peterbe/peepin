@@ -8,12 +8,12 @@ This tool makes it easier to update your strict "peep-ready"
 If you want to add a package or edit the version of one you're currently
 using you have to do the following steps:
 
-    1. Go to pypi for that package
-    2. Download the .tgz file
-    3. Possibly download the .whl file
-    4. Run `peep hash downloadedpackage-1.2.3.tgz`
-    5. Run `peep hash downloadedpackage-1.2.3.whl`
-    6. Edit requirements.txt
+1. Go to pypi for that package
+2. Download the .tgz file
+3. Possibly download the .whl file
+4. Run `peep hash downloadedpackage-1.2.3.tgz`
+5. Run `peep hash downloadedpackage-1.2.3.whl`
+6. Edit requirements.txt
 
 This script does all those things.
 Hackishly wonderfully so.
@@ -22,7 +22,7 @@ Installation
 ============
 
 This is something you only do or ever need in a development
-environment. Ie. your laptop.
+environment. Ie. your laptop::
 
     pip install peepin
 
