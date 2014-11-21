@@ -3,6 +3,7 @@
 See README :)
 """
 
+from __future__ import print_function
 import re
 import urllib
 import tempfile
@@ -12,11 +13,15 @@ import sys
 import peep
 
 
+def _verbose(*args):
+    print('* ' + ' '.join(args))
+
+
 def _download(url):
     return urllib.urlopen(url).read()
 
 
-def run(spec, file):
+def run(spec, file, verbose=False):
     if '==' in spec:
         package, version = spec.split('==')
     else:
@@ -25,8 +30,12 @@ def run(spec, file):
         # then the latest version is in the breadcrumb
         version = get_latest_version(package)
         assert version
-    hashes = get_hashes(package, version)
+        if verbose:
+            _verbose("Latest version for", version)
+    hashes = get_hashes(package, version, verbose=verbose)
 
+    if verbose:
+        _verbose("Editing", file)
     requirements = open(file).read()
 
     def new_lines():
@@ -55,7 +64,7 @@ def run(spec, file):
             else:
                 prev.append(line)
 
-    open(file, 'w').write(requirements)
+    # open(file, 'w').write(requirements)
 
     return 0
 
@@ -67,7 +76,7 @@ def get_latest_version(package):
     return re.findall('"/pypi/%s/(.*)"' % package, content)[0]
 
 
-def get_hashes(package, version):
+def get_hashes(package, version, verbose=False):
 
     url = 'https://pypi.python.org/pypi/%s' % package
     if version:
@@ -78,6 +87,8 @@ def get_hashes(package, version):
 
     for found in finds:
         url = found[0]
+        if verbose:
+            _verbose("Found URL", url)
         download_dir = tempfile.gettempdir()
         filename = os.path.join(
             download_dir,
@@ -86,27 +97,31 @@ def get_hashes(package, version):
         if not os.path.isfile(filename):
             with open(filename, 'wb') as f:
                 f.write(urllib.urlopen(url).read())
-        yield peep.hash_of_file(filename)
+        hash_ = peep.hash_of_file(filename)
+        if verbose:
+            _verbose("  Hash", hash_)
+        yield hash_
 
 
 def main():
-    def grr():
-        print (
-            'USAGE: %s "some-package==1.2.3" [/path/to/requirements.txt]'
-            % __file__
-        )
-        sys.exit(1)
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        'package',
+        help="package (e.g. some-package==1.2.3 or just some-package)"
+    )
+    parser.add_argument(
+        'requirements_file',
+        help="requirements file to write to (default requirementst.txt)",
+        default='requirements.txt', nargs='?'
+    )
+    parser.add_argument(
+        "--verbose", help="Verbose output", action="store_true"
+    )
 
-    args = sys.argv[1:]
-    if not args:
-        grr()
-    spec = args[0]
-    if len(args) > 1:
-        requirements_file = args[1]
-    else:
-        requirements_file = 'requirements.txt'
+    args = parser.parse_args()
+    return run(args.package, args.requirements_file, verbose=args.verbose)
 
-    return run(spec, requirements_file)
 
 if __name__ == '__main__':
     sys.exit(main())
