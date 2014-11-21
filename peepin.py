@@ -95,8 +95,12 @@ def get_hashes(package, version, verbose=False):
             os.path.basename(url.split('#')[0])
         )
         if not os.path.isfile(filename):
+            if verbose:
+                _verbose("  Downloaded to", filename)
             with open(filename, 'wb') as f:
                 f.write(urllib.urlopen(url).read())
+        elif verbose:
+            _verbose("  Re-using", filename)
         hash_ = peep.hash_of_file(filename)
         if verbose:
             _verbose("  Hash", hash_)
