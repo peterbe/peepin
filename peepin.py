@@ -64,7 +64,7 @@ def run(spec, file, verbose=False):
             else:
                 prev.append(line)
 
-    # open(file, 'w').write(requirements)
+    open(file, 'w').write(requirements)
 
     return 0
 
