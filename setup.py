@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='peepin',
-    version='0.3',
+    version='0.4',
     description='Edits your requirements.txt by peep-hashing them',
     long_description=open('README.rst').read(),
     author='Peter Bengtsson',
