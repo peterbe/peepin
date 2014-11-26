@@ -21,19 +21,19 @@ Hackishly wonderfully so.
 A Word of Warning!
 ==================
 
-The whole point of peep is that you vet the packages that you use 
-on your laptop and that they haven't been tampered with. Then you 
-can confidently install them on a server. 
+The whole point of peep is that you vet the packages that you use
+on your laptop and that they haven't been tampered with. Then you
+can confidently install them on a server.
 
-This tool downloads from PyPI (over HTTPS) and runs ``peep hash`` 
-on the downloaded files. 
+This tool downloads from PyPI (over HTTPS) and runs ``peep hash``
+on the downloaded files.
 
-You still need to check that the packages that are downloaded 
-are sane. 
+You still need to check that the packages that are downloaded
+are sane.
 
-You might not have time to go through the lines one by one 
-but you should be aware that the vetting process is your 
-responsibility. 
+You might not have time to go through the lines one by one
+but you should be aware that the vetting process is your
+responsibility.
 
 Installation
 ============
@@ -65,6 +65,14 @@ directory you can do this::
 If there's not output. It worked. Check how it edited your
 requirements files.
 
+Runnings tests
+==============
+
+Simply run:
+
+    python setup.py test
+
+
 Ode to Erik Rose
 ================
 
@@ -79,6 +87,18 @@ Then Erik is just a dude with a goatee.
 
 Version History
 ===============
+
+0.5
+  * Fix for multi-version packages like Django
+
+0.4
+  * Be verbose about downloaded files
+
+0.3
+  * Regression
+
+0.2
+  * --verbose option
 
 0.1
   * Works

@@ -1,6 +1,4 @@
-import sys
-
-from setuptools import setup, find_packages
+from setuptools import setup
 
 
 setup(
@@ -18,8 +16,8 @@ setup(
     url='https://github.com/peterbe/peepin',
     include_package_data=True,
     install_requires=['peep'],
-    #tests_require=['nose>=1.3.0,<2.0'],
-    #test_suite='nose.collector',
+    tests_require=['nose>=1.3.0,<2.0', 'httpretty'],
+    test_suite='nose.collector',
     classifiers=[
         'Intended Audience :: Developers',
         'Intended Audience :: System Administrators',
