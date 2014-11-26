@@ -91,6 +91,9 @@ Then Erik is just a dude with a goatee.
 Version History
 ===============
 
+0.6
+  * Works in python 2.6, 2.7, 3.3 and 3.4
+
 0.5
   * Fix for multi-version packages like Django
 

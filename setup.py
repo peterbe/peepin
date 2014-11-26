@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup(
     name='peepin',
-    version='0.5',
+    version='0.6',
     description='Edits your requirements.txt by peep-hashing them',
     long_description=open('README.rst').read(),
     author='Peter Bengtsson',
