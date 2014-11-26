@@ -4,11 +4,16 @@ See README :)
 """
 
 from __future__ import print_function
+import cgi
 import re
-import urllib
 import tempfile
 import os
 import sys
+
+if sys.version_info >= (3,):
+    from urllib.request import urlopen
+else:
+    from urllib import urlopen
 
 import peep
 
@@ -18,7 +23,10 @@ def _verbose(*args):
 
 
 def _download(url):
-    return urllib.urlopen(url).read()
+    r = urlopen(url)
+    _, params = cgi.parse_header(r.headers.get('Content-Type', ''))
+    encoding = params.get('charset', 'utf-8')
+    return r.read().decode(encoding)
 
 
 def run(spec, file, verbose=False):
@@ -109,7 +117,7 @@ def get_hashes(package, version, verbose=False):
             if verbose:
                 _verbose("  Downloaded to", filename)
             with open(filename, 'wb') as f:
-                f.write(urllib.urlopen(url).read())
+                f.write(_download(url))
         elif verbose:
             _verbose("  Re-using", filename)
         hash_ = peep.hash_of_file(filename)
