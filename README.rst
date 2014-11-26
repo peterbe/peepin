@@ -2,6 +2,9 @@
 Peepin
 ======
 
+[![Build Status](https://travis-ci.org/peterbe/peepin.svg?branch=master)](https://travis-ci.org/peterbe/peepin)
+
+
 This tool makes it easier to update your strict "peep-ready"
 ``requirements.txt`` file.
 
