@@ -1,8 +1,15 @@
 language: python
 python:
-  - 3.4
-  - 3.3
-  - 2.7
-  - 2.6
-# command to run tests, e.g. python setup.py test
+- 3.4
+- 3.3
+- 2.7
+- 2.6
 script: python setup.py test
+deploy:
+  provider: pypi
+  user: peterbe
+  password:
+    secure: KzHPDPp6STNDRYzkUjvk3gjZkEJ6w4/YwY7qvHpQwxxWBSFW4/zv+c47Qf1RyNbQrkMbUVWmXyXxVxen4mo8FlSTWO0Aj5XglzhYZR5rddzdh2Zf1FqIXLsRFTIpvp6SLcaI0yW84cqGq2cLRnH0TWdaQuGXvdo7MQOk79Qjw4Y=
+  on:
+    repo: peterbe/peepin
+  distributions: "sdist bdist_wheel"
