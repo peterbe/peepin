@@ -72,8 +72,19 @@ def run(spec, file, verbose=False):
 def get_latest_version(package):
     url = 'https://pypi.python.org/pypi/%s' % package
     content = _download(url)
-    content = content.split('id="breadcrumb"')[1].split('</div>')[0]
-    return re.findall('"/pypi/%s/(.*)"' % package, content)[0]
+
+    breadcrumb_content = content.split('id="breadcrumb"')[1].split('</div>')[0]
+
+    def extract_version(html):
+        return re.findall(
+            '"/pypi/%s/(.*)"' % re.escape(package), html, re.I
+        )[0]
+    try:
+        return extract_version(breadcrumb_content)
+    except IndexError:
+        assert '<h1>Index of Packages</h1>' in content
+        table_content = content.split('<h1>Index of Packages</h1>')[1]
+        return extract_version(table_content)
 
 
 def get_hashes(package, version, verbose=False):
