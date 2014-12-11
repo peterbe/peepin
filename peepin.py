@@ -22,8 +22,10 @@ def _verbose(*args):
     print('* ' + ' '.join(args))
 
 
-def _download(url):
+def _download(url, binary=False):
     r = urlopen(url)
+    if binary:
+        return r.read()
     _, params = cgi.parse_header(r.headers.get('Content-Type', ''))
     encoding = params.get('charset', 'utf-8')
     return r.read().decode(encoding)
@@ -103,6 +105,7 @@ def get_hashes(package, version, verbose=False):
 
     content = _download(url)
     finds = re.findall('href="((.*)#md5=\w+)"', content)
+    yielded = []
 
     for found in finds:
         url = found[0]
@@ -117,13 +120,16 @@ def get_hashes(package, version, verbose=False):
             if verbose:
                 _verbose("  Downloaded to", filename)
             with open(filename, 'wb') as f:
-                f.write(_download(url))
+                f.write(_download(url, binary=True))
         elif verbose:
             _verbose("  Re-using", filename)
         hash_ = peep.hash_of_file(filename)
+        if hash_ in yielded:
+            continue
         if verbose:
             _verbose("  Hash", hash_)
         yield hash_
+        yielded.append(hash_)
 
 
 def main():

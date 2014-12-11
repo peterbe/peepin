@@ -1,11 +1,13 @@
+from os import path
 from setuptools import setup
 
+_here = path.dirname(__file__)
 
 setup(
     name='peepin',
-    version='0.6',
+    version='0.7',
     description='Edits your requirements.txt by peep-hashing them',
-    long_description=open('README.rst').read(),
+    long_description=open(path.join(_here, 'README.rst')).read(),
     author='Peter Bengtsson',
     author_email='mail@peterbe.com',
     license='MIT',
