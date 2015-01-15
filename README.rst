@@ -91,6 +91,9 @@ Then Erik is just a dude with a goatee.
 Version History
 ===============
 
+0.9
+  * setup.py installs argparse if you're on python 2.6
+
 0.8
   * Avoid editing the requirements file if no packages are found, fixed #3
 
