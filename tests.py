@@ -31,6 +31,31 @@ class Tests(TestCase):
         self.assertEqual(version, '0.3')
 
     @httpretty.activate
+    def test_get_hashes_error(self):
+        httpretty.register_uri(
+            httpretty.GET,
+            "https://pypi.python.org/pypi/somepackage/1.2.3",
+            body="""
+            <div id="content">
+
+            <div id="breadcrumb">
+              <a href="/pypi">Package Index</a>
+
+                <span class="breadcrumb-separator">&gt;</span>
+                <a href="/pypi/peepin">peepin</a>
+
+            </div>
+            """,
+        )
+
+        self.assertRaises(
+            peepin.PackageError,
+            peepin.run,
+            'somepackage==1.2.3',
+            'doesntmatter.txt'
+        )
+
+    @httpretty.activate
     def test_get_latest_version_multiversion(self):
         httpretty.register_uri(
             httpretty.GET,

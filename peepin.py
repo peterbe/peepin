@@ -18,6 +18,10 @@ else:
 import peep
 
 
+class PackageError(Exception):
+    pass
+
+
 def _verbose(*args):
     print('* ' + ' '.join(args))
 
@@ -44,22 +48,24 @@ def run(spec, file, verbose=False):
             _verbose("Latest version for", version)
     hashes = get_hashes(package, version, verbose=verbose)
 
-    if verbose:
-        _verbose("Editing", file)
-    requirements = open(file).read()
-
-    def new_lines():
+    def get_new_lines():
         out = ''
         for h in hashes:
             out += '# sha256: %s\n' % h
         out += '%s==%s\n' % (package, version)
         return out
 
+    new_lines = get_new_lines()
+
+    if verbose:
+        _verbose("Editing", file)
+    requirements = open(file).read()
+
     # if the package wasn't already there, add it to the bottom
     if '%s==' % package not in requirements:
         # easy peasy
         requirements = requirements.strip() + '\n'
-        requirements += new_lines()
+        requirements += new_lines
     else:
         # need to replace the existing
         prev = []
@@ -67,7 +73,7 @@ def run(spec, file, verbose=False):
             if '%s==' % package in line:
                 prev.append(line)
                 combined = '\n'.join(prev + [''])
-                requirements = requirements.replace(combined, new_lines())
+                requirements = requirements.replace(combined, new_lines)
                 break
             elif '==' in line:
                 prev = []
@@ -102,7 +108,7 @@ def get_hashes(package, version, verbose=False):
     url = 'https://pypi.python.org/pypi/%s' % package
     if version:
         url += '/%s' % version
-
+    print(url)
     content = _download(url)
     finds = re.findall('href="((.*)#md5=\w+)"', content)
     yielded = []
@@ -130,6 +136,11 @@ def get_hashes(package, version, verbose=False):
             _verbose("  Hash", hash_)
         yield hash_
         yielded.append(hash_)
+
+    if not yielded:
+        raise PackageError(
+            "No packages could be found on {0}".format(url)
+        )
 
 
 def main():

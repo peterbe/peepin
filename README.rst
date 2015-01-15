@@ -4,7 +4,7 @@ Peepin
 
 .. image:: https://travis-ci.org/peterbe/peepin.svg?branch=master
     :target: https://travis-ci.org/peterbe/peepin
-    
+
 This tool makes it easier to update your strict "peep-ready"
 ``requirements.txt`` file.
 
@@ -90,6 +90,12 @@ Then Erik is just a dude with a goatee.
 
 Version History
 ===============
+
+0.8
+  * Avoid editing the requirements file if no packages are found, fixed #3
+
+0.7
+  * Ability to download binary URLs
 
 0.6
   * Works in python 2.6, 2.7, 3.3 and 3.4
