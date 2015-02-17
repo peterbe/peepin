@@ -96,3 +96,83 @@ class Tests(TestCase):
 
         version = peepin.get_latest_version('django')
         self.assertEqual(version, '1.7.x')
+
+    def test_amend_requirements_content_new(self):
+        requirements = """
+# empty so far
+        """.strip() + '\n'
+        new_lines = """
+# sha256: 6QTt-5DahBKcBiUs06BfkLTuvBu1uF7pblb_bPaUONU
+autocompeter==1.2.3
+        """.strip()
+        result = peepin.amend_requirements_content(
+            requirements, 'autocompeter', new_lines
+        )
+        self.assertEqual(result, requirements + new_lines)
+
+    def test_amend_requirements_content_replacement(self):
+        requirements = """
+# sha256: hHK_EwLbFb3yxDk6XpGAzb8ps_jtWwbAa_XGuo9DNYg
+autocompeter==1.2.2
+        """.strip() + '\n'
+        new_lines = """
+# sha256: 6QTt-5DahBKcBiUs06BfkLTuvBu1uF7pblb_bPaUONU
+autocompeter==1.2.3
+        """.strip()
+        result = peepin.amend_requirements_content(
+            requirements, 'autocompeter', new_lines
+        )
+        self.assertEqual(result, new_lines)
+
+    def test_amend_requirements_content_replacement_2(self):
+        requirements = """
+# sha256: 3jrATsqwp-CvZO7jCnHnI7pYhrlYIF9zVN1iQ52mA4k
+# sha256: hHK_EwLbFb3yxDk6XpGAzb8ps_jtWwbAa_XGuo9DNYg
+autocompeter==1.2.2
+        """.strip() + '\n'
+        new_lines = """
+# sha256: 6QTt-5DahBKcBiUs06BfkLTuvBu1uF7pblb_bPaUONU
+autocompeter==1.2.3
+        """.strip()
+        result = peepin.amend_requirements_content(
+            requirements, 'autocompeter', new_lines
+        )
+        self.assertEqual(result, new_lines)
+
+    def test_amend_requirements_content_replacement_amonst_others(self):
+        previous = """
+# sha256: cHay6ATFKumO3svU3B-8qBMYb-f1_dYlR4OgClWntEI
+otherpackage==1.0.0
+""".strip() + '\n'
+        requirements = previous + """
+# sha256: 3jrATsqwp-CvZO7jCnHnI7pYhrlYIF9zVN1iQ52mA4k
+# sha256: hHK_EwLbFb3yxDk6XpGAzb8ps_jtWwbAa_XGuo9DNYg
+autocompeter==1.2.2
+        """.strip() + '\n'
+        new_lines = """
+# sha256: 6QTt-5DahBKcBiUs06BfkLTuvBu1uF7pblb_bPaUONU
+autocompeter==1.2.3
+        """.strip()
+        result = peepin.amend_requirements_content(
+            requirements, 'autocompeter', new_lines
+        )
+        self.assertEqual(result, previous + new_lines)
+
+    def test_amend_requirements_content_replacement_amonst_others_2(self):
+        previous = """
+# sha256: 6nj05rvk7z_4OHM6mUIsl7GjE2plb4N3PqnJWaSRRlw
+https://github.com/rhelmer/pyinotify/archive/9ff352f.zip#egg=pyinotify
+""".strip() + '\n'
+        requirements = previous + """
+# sha256: 3jrATsqwp-CvZO7jCnHnI7pYhrlYIF9zVN1iQ52mA4k
+# sha256: hHK_EwLbFb3yxDk6XpGAzb8ps_jtWwbAa_XGuo9DNYg
+autocompeter==1.2.2
+        """.strip() + '\n'
+        new_lines = """
+# sha256: 6QTt-5DahBKcBiUs06BfkLTuvBu1uF7pblb_bPaUONU
+autocompeter==1.2.3
+        """.strip()
+        result = peepin.amend_requirements_content(
+            requirements, 'autocompeter', new_lines
+        )
+        self.assertEqual(result, previous + new_lines)

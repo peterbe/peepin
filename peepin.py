@@ -48,18 +48,23 @@ def run(spec, file, verbose=False):
             _verbose("Latest version for", version)
     hashes = get_hashes(package, version, verbose=verbose)
 
-    def get_new_lines():
-        out = ''
-        for h in hashes:
-            out += '# sha256: %s\n' % h
-        out += '%s==%s\n' % (package, version)
-        return out
-
-    new_lines = get_new_lines()
+    new_lines = ''
+    for h in hashes:
+        new_lines += '# sha256: %s\n' % h
 
     if verbose:
         _verbose("Editing", file)
     requirements = open(file).read()
+    requirements = amend_requirements_content(
+        requirements,
+        package,
+        new_lines
+    )
+    open(file, 'w').write(requirements)
+
+    return 0
+
+def amend_requirements_content(requirements, package, new_lines):
 
     # if the package wasn't already there, add it to the bottom
     if '%s==' % package not in requirements:
@@ -75,14 +80,12 @@ def run(spec, file, verbose=False):
                 combined = '\n'.join(prev + [''])
                 requirements = requirements.replace(combined, new_lines)
                 break
-            elif '==' in line:
+            elif '==' in line or '://' in line:
                 prev = []
             else:
                 prev.append(line)
 
-    open(file, 'w').write(requirements)
-
-    return 0
+    return requirements
 
 
 def get_latest_version(package):
@@ -108,7 +111,8 @@ def get_hashes(package, version, verbose=False):
     url = 'https://pypi.python.org/pypi/%s' % package
     if version:
         url += '/%s' % version
-    print(url)
+    if verbose:
+        print(url)
     content = _download(url)
     finds = re.findall('href="((.*)#md5=\w+)"', content)
     yielded = []
