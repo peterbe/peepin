@@ -91,6 +91,10 @@ Then Erik is just a dude with a goatee.
 Version History
 ===============
 
+0.10
+  * If you had lines like `http://github.com/some.zip#egg=package` in
+  the requirements the editing of lines got confused.
+
 0.9
   * setup.py installs argparse if you're on python 2.6
 
