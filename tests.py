@@ -1,8 +1,37 @@
+import os
+from shutil import rmtree
+from tempfile import mkdtemp, gettempdir
+from contextlib import contextmanager
 from unittest import TestCase
+from functools import wraps
+from glob import glob
 
 import httpretty
 
 import peepin
+
+
+@contextmanager
+def tmpfile(name='requirements.txt'):
+    dir_ = mkdtemp('peepintest')
+    try:
+        yield os.path.join(dir_, name)
+    finally:
+        rmtree(dir_)
+
+
+def cleanup_tmpdir(pattern):
+
+    def decorator(test):
+        @wraps(test)
+        def inner(self, *args, **kwargs):
+            try:
+                return test(self, *args, **kwargs)
+            finally:
+                for each in glob(os.path.join(gettempdir(), pattern)):
+                    os.remove(each)
+        return inner
+    return decorator
 
 
 class Tests(TestCase):
@@ -176,3 +205,66 @@ autocompeter==1.2.3
             requirements, 'autocompeter', new_lines
         )
         self.assertEqual(result, previous + new_lines)
+
+    @httpretty.activate
+    @cleanup_tmpdir('peepin*')
+    def test_run(self):
+        httpretty.register_uri(
+            httpretty.GET,
+            "https://pypi.python.org/pypi/peepin",
+            body="""
+            <div id="content">
+
+            <div id="breadcrumb">
+              <a href="/pypi">Package Index</a>
+
+                <span class="breadcrumb-separator">&gt;</span>
+                <a href="/pypi/peepin">peepin</a>
+
+                <span class="breadcrumb-separator">&gt;</span>
+                <a href="/pypi/peepin/0.3">0.3</a>
+            </div>
+            """,
+        )
+        httpretty.register_uri(
+            httpretty.GET,
+            "https://pypi.python.org/pypi/peepin/0.10",
+            # sorry
+            body="""
+<a href="https://pypi.python.org/packages/2.7/p/peepin/peepin-0.10-py2-none-any.whl#md5=0a"
+    >peepin-0.10-py2-none-any.whl</a>
+
+<a href="https://pypi.python.org/packages/3.3/p/peepin/peepin-0.10-py3-none-any.whl#md5=45"
+    >peepin-0.10-py3-none-any.whl</a>
+
+<a href="https://pypi.python.org/packages/source/p/peepin/peepin-0.10.tar.gz#md5=ae"
+    >peepin-0.10.tar.gz</a>
+            """,
+        )
+        httpretty.register_uri(
+            httpretty.GET,
+            "https://pypi.python.org/packages/2.7/p/peepin/peepin-0.10-py2-none-any.whl#md5=0a",
+            body="Some py2 wheel content\n",
+        )
+        httpretty.register_uri(
+            httpretty.GET,
+            "https://pypi.python.org/packages/3.3/p/peepin/peepin-0.10-py3-none-any.whl#md5=45",
+            body="Some py3 wheel content\n",
+        )
+        httpretty.register_uri(
+            httpretty.GET,
+            "https://pypi.python.org/packages/source/p/peepin/peepin-0.10.tar.gz#md5=ae",
+            body="Some tarball content\n",
+        )
+        with tmpfile() as filename:
+            open(filename, 'w').write('')
+            retcode = peepin.run('peepin==0.10', filename)
+            self.assertEqual(retcode, 0)
+            output = open(filename).read()
+            lines = output.splitlines()
+
+            self.assertEqual(lines[0], '')
+            self.assertEqual(lines[1], '# sha256: MRBPjA-YFqbSE120Iyz6JIssdSVZYmMhZXfTzck6PCU')
+            self.assertEqual(lines[2], '# sha256: YftZIx_-lnzmk6IJnP9ZomlebQKsu2sFEDPjsRB9gAg')
+            self.assertEqual(lines[3], '# sha256: svBtPE0Ui2SHaKurUIavrAQU5J60gT4fPEULl1x3zuk')
+            self.assertEqual(lines[4], 'peepin==0.10')

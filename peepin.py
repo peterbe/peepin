@@ -51,6 +51,7 @@ def run(spec, file, verbose=False):
     new_lines = ''
     for h in hashes:
         new_lines += '# sha256: %s\n' % h
+    new_lines += '%s==%s\n' % (package, version)
 
     if verbose:
         _verbose("Editing", file)
