@@ -55,13 +55,15 @@ def run(spec, file, verbose=False):
 
     if verbose:
         _verbose("Editing", file)
-    requirements = open(file).read()
+    with open(file) as f:
+        requirements = f.read()
     requirements = amend_requirements_content(
         requirements,
         package,
         new_lines
     )
-    open(file, 'w').write(requirements)
+    with open(file, 'w') as f:
+        f.write(requirements)
 
     return 0
 
