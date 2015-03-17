@@ -257,10 +257,12 @@ autocompeter==1.2.3
             body="Some tarball content\n",
         )
         with tmpfile() as filename:
-            open(filename, 'w').write('')
+            with open(filename, 'w') as f:
+                f.write('')
             retcode = peepin.run('peepin==0.10', filename)
             self.assertEqual(retcode, 0)
-            output = open(filename).read()
+            with open(filename) as f:
+                output = read()
             lines = output.splitlines()
 
             self.assertEqual(lines[0], '')
