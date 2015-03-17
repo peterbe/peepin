@@ -262,7 +262,7 @@ autocompeter==1.2.3
             retcode = peepin.run('peepin==0.10', filename)
             self.assertEqual(retcode, 0)
             with open(filename) as f:
-                output = read()
+                output = f.read()
             lines = output.splitlines()
 
             self.assertEqual(lines[0], '')
