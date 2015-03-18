@@ -35,7 +35,7 @@ setup(
     url='https://github.com/peterbe/peepin',
     include_package_data=True,
     install_requires=install_requires,
-    tests_require=['nose>=1.3.0,<2.0', 'httpretty'],
+    tests_require=['nose>=1.3.0,<2.0', 'httpretty', 'mock'],
     test_suite='nose.collector',
     classifiers=[
         'Intended Audience :: Developers',
