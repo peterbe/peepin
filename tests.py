@@ -53,7 +53,7 @@ class Tests(TestCase):
 
         def mocked_get(url, **options):
             if url == "https://pypi.python.org/pypi/peepin":
-                return _Response("""
+                return _Response(b"""
                 <div id="content">
 
                 <div id="breadcrumb">
@@ -78,7 +78,7 @@ class Tests(TestCase):
 
         def mocked_get(url, **options):
             if url == "https://pypi.python.org/pypi/somepackage/1.2.3":
-                return _Response("""
+                return _Response(b"""
                 <div id="content">
 
                 <div id="breadcrumb">
@@ -105,7 +105,7 @@ class Tests(TestCase):
 
         def mocked_get(url, **options):
             if url == "https://pypi.python.org/pypi/django":
-                return _Response("""
+                return _Response(b"""
                 <div id="content">
                 <div id="breadcrumb">
                   <a href="/pypi">Package Index</a>
@@ -230,7 +230,7 @@ autocompeter==1.2.3
 
         def mocked_get(url, **options):
             if url == "https://pypi.python.org/pypi/peepin":
-                return _Response("""
+                return _Response(b"""
                 <div id="content">
 
                 <div id="breadcrumb">
@@ -244,7 +244,7 @@ autocompeter==1.2.3
                 </div>
                 """)
             elif url == "https://pypi.python.org/pypi/peepin/0.10":
-                return _Response("""
+                return _Response(b"""
                 <a href="https://pypi.python.org/packages/2.7/p/peepin/peepin-0.10-py2-none-any.whl#md5=0a"
                     >peepin-0.10-py2-none-any.whl</a>
 
@@ -255,11 +255,11 @@ autocompeter==1.2.3
                     >peepin-0.10.tar.gz</a>
                 """)
             elif url == "https://pypi.python.org/packages/2.7/p/peepin/peepin-0.10-py2-none-any.whl#md5=0a":
-                return _Response("Some py2 wheel content\n")
+                return _Response(b"Some py2 wheel content\n")
             elif url == "https://pypi.python.org/packages/3.3/p/peepin/peepin-0.10-py3-none-any.whl#md5=45":
-                return _Response("Some py3 wheel content\n")
+                return _Response(b"Some py3 wheel content\n")
             elif url == "https://pypi.python.org/packages/source/p/peepin/peepin-0.10.tar.gz#md5=ae":
-                return _Response("Some tarball content\n")
+                return _Response(b"Some tarball content\n")
 
             raise NotImplementedError(url)
 
