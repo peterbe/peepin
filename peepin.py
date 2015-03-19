@@ -51,16 +51,19 @@ def run(spec, file, verbose=False):
     new_lines = ''
     for h in hashes:
         new_lines += '# sha256: %s\n' % h
+    new_lines += '%s==%s\n' % (package, version)
 
     if verbose:
         _verbose("Editing", file)
-    requirements = open(file).read()
+    with open(file) as f:
+        requirements = f.read()
     requirements = amend_requirements_content(
         requirements,
         package,
         new_lines
     )
-    open(file, 'w').write(requirements)
+    with open(file, 'w') as f:
+        f.write(requirements)
 
     return 0
 
