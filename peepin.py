@@ -122,7 +122,6 @@ def get_hashes(package, version, verbose=False):
 
     for found in finds:
         url = found[0]
-        print("URL", url)
         if verbose:
             _verbose("Found URL", url)
         download_dir = tempfile.gettempdir()
@@ -130,12 +129,10 @@ def get_hashes(package, version, verbose=False):
             download_dir,
             os.path.basename(url.split('#')[0])
         )
-        print("FILENAME", filename)
         if not os.path.isfile(filename):
             if verbose:
                 _verbose("  Downloaded to", filename)
             with open(filename, 'wb') as f:
-                print("\t", repr(_download(url, binary=True)))
                 f.write(_download(url, binary=True))
         elif verbose:
             _verbose("  Re-using", filename)
