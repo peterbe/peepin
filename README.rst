@@ -91,6 +91,11 @@ Then Erik is just a dude with a goatee.
 Version History
 ===============
 
+0.11
+  * Bugfix so that it doesn't just insert the new SHAs but also the new
+  package name and version.
+  * Replaced all HTTP mocking done by `httpretty` with regular `mock`.
+  
 0.10
   * If you had lines like `http://github.com/some.zip#egg=package` in
   the requirements the editing of lines got confused.
