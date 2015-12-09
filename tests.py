@@ -38,7 +38,7 @@ def cleanup_tmpdir(pattern):
 class _Response(object):
     def __init__(self, content, status_code=200, headers=None):
         if isinstance(content, dict):
-            content = json.dumps(content)
+            content = json.dumps(content).encode('utf-8')
         self.content = content
         self.status_code = status_code
         if headers is None:
