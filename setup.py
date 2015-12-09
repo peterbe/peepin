@@ -22,7 +22,7 @@ if sys.version_info >= (2, 6) and sys.version_info <= (2, 7):
 
 setup(
     name='peepin',
-    version='0.11',
+    version='0.12',
     description='Edits your requirements.txt by peep-hashing them',
     long_description=open(path.join(_here, 'README.rst')).read(),
     author='Peter Bengtsson',
