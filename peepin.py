@@ -5,10 +5,10 @@ See README :)
 
 from __future__ import print_function
 import cgi
-import re
 import tempfile
 import os
 import sys
+import json
 
 if sys.version_info >= (3,):
     from urllib.request import urlopen
@@ -67,6 +67,7 @@ def run(spec, file, verbose=False):
 
     return 0
 
+
 def amend_requirements_content(requirements, package, new_lines):
 
     # if the package wasn't already there, add it to the bottom
@@ -92,36 +93,25 @@ def amend_requirements_content(requirements, package, new_lines):
 
 
 def get_latest_version(package):
-    url = 'https://pypi.python.org/pypi/%s' % package
-    content = _download(url)
-
-    breadcrumb_content = content.split('id="breadcrumb"')[1].split('</div>')[0]
-
-    def extract_version(html):
-        return re.findall(
-            '"/pypi/%s/(.*)"' % re.escape(package), html, re.I
-        )[0]
-    try:
-        return extract_version(breadcrumb_content)
-    except IndexError:
-        assert '<h1>Index of Packages</h1>' in content
-        table_content = content.split('<h1>Index of Packages</h1>')[1]
-        return extract_version(table_content)
+    url = 'https://pypi.python.org/pypi/%s/json' % package
+    content = json.loads(_download(url))
+    return content['info']['version']
 
 
 def get_hashes(package, version, verbose=False):
 
-    url = 'https://pypi.python.org/pypi/%s' % package
-    if version:
-        url += '/%s' % version
+    url = 'https://pypi.python.org/pypi/%s/json' % package
     if verbose:
         print(url)
-    content = _download(url)
-    finds = re.findall('href="((.*)#md5=\w+)"', content)
+    content = json.loads(_download(url))
     yielded = []
-
-    for found in finds:
-        url = found[0]
+    try:
+        latest_version = content['info']['version']
+        releases = content['releases'][latest_version]
+    except KeyError:
+        raise PackageError('package JSON is not sane')
+    for found in releases:
+        url = found['url']
         if verbose:
             _verbose("Found URL", url)
         download_dir = tempfile.gettempdir()
