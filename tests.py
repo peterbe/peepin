@@ -1,3 +1,4 @@
+import json
 import os
 from shutil import rmtree
 from tempfile import mkdtemp, gettempdir
@@ -36,6 +37,8 @@ def cleanup_tmpdir(pattern):
 
 class _Response(object):
     def __init__(self, content, status_code=200, headers=None):
+        if isinstance(content, dict):
+            content = json.dumps(content).encode('utf-8')
         self.content = content
         self.status_code = status_code
         if headers is None:
@@ -52,21 +55,13 @@ class Tests(TestCase):
     def test_get_latest_version_simple(self, murlopen):
 
         def mocked_get(url, **options):
-            if url == "https://pypi.python.org/pypi/peepin":
-                return _Response(b"""
-                <div id="content">
-
-                <div id="breadcrumb">
-                  <a href="/pypi">Package Index</a>
-
-                    <span class="breadcrumb-separator">&gt;</span>
-                    <a href="/pypi/peepin">peepin</a>
-
-                    <span class="breadcrumb-separator">&gt;</span>
-                    <a href="/pypi/peepin/0.3">0.3</a>
-                </div>
-                """)
-            return NotImplementedError(url)
+            if url == 'https://pypi.python.org/pypi/peepin/json':
+                return _Response({
+                    'info': {
+                        'version': '0.3',
+                    }
+                })
+            raise NotImplementedError(url)
 
         murlopen.side_effect = mocked_get
 
@@ -77,18 +72,8 @@ class Tests(TestCase):
     def test_get_hashes_error(self, murlopen):
 
         def mocked_get(url, **options):
-            if url == "https://pypi.python.org/pypi/somepackage/1.2.3":
-                return _Response(b"""
-                <div id="content">
-
-                <div id="breadcrumb">
-                  <a href="/pypi">Package Index</a>
-
-                    <span class="breadcrumb-separator">&gt;</span>
-                    <a href="/pypi/peepin">peepin</a>
-
-                </div>
-                """)
+            if url == "https://pypi.python.org/pypi/somepackage/json":
+                return _Response({})
             raise NotImplementedError(url)
 
         murlopen.side_effect = mocked_get
@@ -104,39 +89,12 @@ class Tests(TestCase):
     def test_get_latest_version_multiversion(self, murlopen):
 
         def mocked_get(url, **options):
-            if url == "https://pypi.python.org/pypi/django":
-                return _Response(b"""
-                <div id="content">
-                <div id="breadcrumb">
-                  <a href="/pypi">Package Index</a>
-                    <span class="breadcrumb-separator">&gt;</span>
-                    <a href="/pypi/Django">Django</a>
-                </div>
-                ...
-                <div class="section">
-                  <h1>Index of Packages</h1>
-
-                <table class="list">
-                <tr>
-                 <th>Package</th>
-
-                 <th>Description</th>
-                </tr>
-
-                <tr class="odd">
-                 <td><a href="/pypi/Django/1.7.x">Django&nbsp;1.7.x</a></td>
-
-                 <td>A high-level Python Web framework that ...
-                </tr>
-                <tr class="even">
-                 <td><a href="/pypi/Django/1.7">Django&nbsp;1.7</a></td>
-
-                 <td>A high-level Python Web framework that ...
-                </tr>
-                <tr class="odd">
-                 <td><a href="/pypi/Django/1.6.8">Django&nbsp;1.6.8</a></td>
-
-                """)
+            if url == 'https://pypi.python.org/pypi/django/json':
+                return _Response({
+                    'info': {
+                        'version': '1.7.x'
+                    }
+                })
             raise NotImplementedError(url)
 
         murlopen.side_effect = mocked_get
@@ -229,7 +187,25 @@ autocompeter==1.2.3
     def test_run(self, murlopen):
 
         def mocked_get(url, **options):
-            if url == "https://pypi.python.org/pypi/peepin":
+            if url == "https://pypi.python.org/pypi/peepin/json":
+                return _Response({
+                    'info': {
+                        'version': '0.3',
+                    },
+                    'releases': {
+                        '0.3': [
+                            {
+                                'url': 'https://pypi.python.org/packages/2.7/p/peepin/peepin-0.10-py2-none-any.whl',
+                            },
+                            {
+                                'url': 'https://pypi.python.org/packages/3.3/p/peepin/peepin-0.10-py3-none-any.whl',
+                            },
+                            {
+                                'url': 'https://pypi.python.org/packages/source/p/peepin/peepin-0.10.tar.gz',
+                            }
+                        ]
+                    }
+                })
                 return _Response(b"""
                 <div id="content">
 
@@ -243,22 +219,11 @@ autocompeter==1.2.3
                     <a href="/pypi/peepin/0.3">0.3</a>
                 </div>
                 """)
-            elif url == "https://pypi.python.org/pypi/peepin/0.10":
-                return _Response(b"""
-                <a href="https://pypi.python.org/packages/2.7/p/peepin/peepin-0.10-py2-none-any.whl#md5=0a"
-                    >peepin-0.10-py2-none-any.whl</a>
-
-                <a href="https://pypi.python.org/packages/3.3/p/peepin/peepin-0.10-py3-none-any.whl#md5=45"
-                    >peepin-0.10-py3-none-any.whl</a>
-
-                <a href="https://pypi.python.org/packages/source/p/peepin/peepin-0.10.tar.gz#md5=ae"
-                    >peepin-0.10.tar.gz</a>
-                """)
-            elif url == "https://pypi.python.org/packages/2.7/p/peepin/peepin-0.10-py2-none-any.whl#md5=0a":
+            elif url == "https://pypi.python.org/packages/2.7/p/peepin/peepin-0.10-py2-none-any.whl":
                 return _Response(b"Some py2 wheel content\n")
-            elif url == "https://pypi.python.org/packages/3.3/p/peepin/peepin-0.10-py3-none-any.whl#md5=45":
+            elif url == "https://pypi.python.org/packages/3.3/p/peepin/peepin-0.10-py3-none-any.whl":
                 return _Response(b"Some py3 wheel content\n")
-            elif url == "https://pypi.python.org/packages/source/p/peepin/peepin-0.10.tar.gz#md5=ae":
+            elif url == "https://pypi.python.org/packages/source/p/peepin/peepin-0.10.tar.gz":
                 return _Response(b"Some tarball content\n")
 
             raise NotImplementedError(url)
