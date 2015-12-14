@@ -91,6 +91,10 @@ Then Erik is just a dude with a goatee.
 Version History
 ===============
 
+0.12
+  * Started using the JSON interface of pypi instead of scraping the
+  HTML.
+
 0.11
   * Bugfix so that it doesn't just insert the new SHAs but also the new
   package name and version.
