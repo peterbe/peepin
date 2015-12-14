@@ -76,6 +76,16 @@ Simply run:
     python setup.py test
 
 
+Debugging
+=========
+
+To avoid having to install `peepin` just to test it or debug a feature
+you can simply just run it like this:
+
+    touch /tmp/whatever.txt
+    python peepin.py --verbose Django /tmp/whatever.txt
+
+
 Ode to Erik Rose
 ================
 
