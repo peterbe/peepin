@@ -53,19 +53,7 @@ class Tests(TestCase):
 
     @mock.patch('peepin.urlopen')
     def test_get_latest_version_simple(self, murlopen):
-
-        def mocked_get(url, **options):
-            if url == 'https://pypi.python.org/pypi/peepin/json':
-                return _Response({
-                    'info': {
-                        'version': '0.3',
-                    }
-                })
-            raise NotImplementedError(url)
-
-        murlopen.side_effect = mocked_get
-
-        version = peepin.get_latest_version('peepin')
+        version = peepin.get_latest_version({'info': {'version': '0.3'}})
         self.assertEqual(version, '0.3')
 
     @mock.patch('peepin.urlopen')
@@ -84,23 +72,6 @@ class Tests(TestCase):
             'somepackage==1.2.3',
             'doesntmatter.txt'
         )
-
-    @mock.patch('peepin.urlopen')
-    def test_get_latest_version_multiversion(self, murlopen):
-
-        def mocked_get(url, **options):
-            if url == 'https://pypi.python.org/pypi/django/json':
-                return _Response({
-                    'info': {
-                        'version': '1.7.x'
-                    }
-                })
-            raise NotImplementedError(url)
-
-        murlopen.side_effect = mocked_get
-
-        version = peepin.get_latest_version('django')
-        self.assertEqual(version, '1.7.x')
 
     def test_amend_requirements_content_new(self):
         requirements = """
@@ -190,10 +161,10 @@ autocompeter==1.2.3
             if url == "https://pypi.python.org/pypi/peepin/json":
                 return _Response({
                     'info': {
-                        'version': '0.3',
+                        'version': '0.10',
                     },
                     'releases': {
-                        '0.3': [
+                        '0.10': [
                             {
                                 'url': 'https://pypi.python.org/packages/2.7/p/peepin/peepin-0.10-py2-none-any.whl',
                             },
@@ -206,19 +177,6 @@ autocompeter==1.2.3
                         ]
                     }
                 })
-                return _Response(b"""
-                <div id="content">
-
-                <div id="breadcrumb">
-                  <a href="/pypi">Package Index</a>
-
-                    <span class="breadcrumb-separator">&gt;</span>
-                    <a href="/pypi/peepin">peepin</a>
-
-                    <span class="breadcrumb-separator">&gt;</span>
-                    <a href="/pypi/peepin/0.3">0.3</a>
-                </div>
-                """)
             elif url == "https://pypi.python.org/packages/2.7/p/peepin/peepin-0.10-py2-none-any.whl":
                 return _Response(b"Some py2 wheel content\n")
             elif url == "https://pypi.python.org/packages/3.3/p/peepin/peepin-0.10-py3-none-any.whl":

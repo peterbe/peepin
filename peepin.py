@@ -42,11 +42,15 @@ def run(spec, file, verbose=False):
         assert '>' not in spec and '<' not in spec
         package, version = spec, None
         # then the latest version is in the breadcrumb
-        version = get_latest_version(package)
+
+    data = get_package_data(package, verbose)
+    if not version:
+        version = get_latest_version(data)
         assert version
         if verbose:
             _verbose("Latest version for", version)
-    hashes = get_hashes(package, version, verbose=verbose)
+
+    hashes = get_hashes(data, version, verbose=verbose)
 
     new_lines = ''
     for h in hashes:
@@ -92,24 +96,27 @@ def amend_requirements_content(requirements, package, new_lines):
     return requirements
 
 
-def get_latest_version(package):
-    url = 'https://pypi.python.org/pypi/%s/json' % package
-    content = json.loads(_download(url))
-    return content['info']['version']
+def get_latest_version(data):
+    return data['info']['version']
 
 
-def get_hashes(package, version, verbose=False):
-
+def get_package_data(package, verbose=False):
     url = 'https://pypi.python.org/pypi/%s/json' % package
     if verbose:
         print(url)
     content = json.loads(_download(url))
+    if 'releases' not in content:
+        raise PackageError('package JSON is not sane')
+
+    return content
+
+
+def get_hashes(data, version, verbose=False):
     yielded = []
     try:
-        latest_version = content['info']['version']
-        releases = content['releases'][latest_version]
+        releases = data['releases'][version]
     except KeyError:
-        raise PackageError('package JSON is not sane')
+        raise PackageError('No data found for version {0}'.format(version))
     for found in releases:
         url = found['url']
         if verbose:
