@@ -101,6 +101,10 @@ Then Erik is just a dude with a goatee.
 Version History
 ===============
 
+0.13
+  * Important bug fix that prevented you from installing specific
+  version. Thanks @pmclanahan
+
 0.12
   * Started using the JSON interface of pypi instead of scraping the
   HTML.
