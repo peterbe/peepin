@@ -17,6 +17,9 @@ This is therefore true for ``peepin`` too.
 ``hashin`` is compatible with ``pip>=8.0``.
 
 
+Introduction
+============
+
 .. image:: https://travis-ci.org/peterbe/peepin.svg?branch=master
     :target: https://travis-ci.org/peterbe/peepin
 
