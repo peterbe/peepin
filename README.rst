@@ -2,6 +2,24 @@
 Peepin
 ======
 
+
+UPDATE JAN 2016
+===============
+
+``peep`` is basically over. The functionality of ``peep`` was folded
+into ``pip`` directly. So basically, there's no need to use ``peep``
+any more.
+
+This is therefore true for ``peepin`` too.
+
+**You should use "hashin":https://pypi.python.org/pypi/hashin instead.**
+
+``hashin`` is compatible with ``pip>=8.0``.
+
+
+Introduction
+============
+
 .. image:: https://travis-ci.org/peterbe/peepin.svg?branch=master
     :target: https://travis-ci.org/peterbe/peepin
 
@@ -100,6 +118,10 @@ Then Erik is just a dude with a goatee.
 
 Version History
 ===============
+
+0.14
+  * Loud warning if you try to use ``peepin`` when you have ``pip>=8``
+  installed.
 
 0.13
   * Important bug fix that prevented you from installing specific

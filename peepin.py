@@ -17,6 +17,18 @@ else:
 
 import peep
 
+import pip
+
+pip_version = pip.__version__
+major_pip_version = int(pip_version.split('.')[0])
+if major_pip_version >= 8:
+    import warnings
+    warnings.warn(
+        "You have pip {0!r} installed.\n"
+        "Use hashin instead (pip install hashin).\n"
+        "https://pypi.python.org/pypi/hashin".format(pip_version)
+    )
+
 
 class PackageError(Exception):
     pass
